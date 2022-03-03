@@ -1,5 +1,7 @@
 package com.example.composeflow
 
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.delay
@@ -22,7 +24,7 @@ class HomeViewMoıdel : ViewModel() {
     }
 
     init {
-        collectInViewModel()
+        //collectInViewModel()
     }
 
     private fun collectInViewModel() {
@@ -37,8 +39,8 @@ class HomeViewMoıdel : ViewModel() {
                 .onEach {
                 }
                 .collect {
-                println("counter : ${it}")
-            }
+                    println("counter : ${it}")
+                }
 
             countDownTimerFlow.collectLatest {
                 delay(2000)//her gönderilen veriden sonra 2 sn bekler eğer 2 sn geçmeden yeni bir veri gelirse bu sefer onun için 2sn bekler
@@ -50,4 +52,30 @@ class HomeViewMoıdel : ViewModel() {
             println(it)
         }.launchIn(viewModelScope)
     }
+
+    //LiveData comparisons
+
+    private val _liveData = MutableLiveData<String>("Kotlin Live Data")
+    val liveData: LiveData<String> = _liveData
+
+    fun changeLiveDataValue() {
+        _liveData.value = "Live Data"
+    }
+
+    private val _stateFlow = MutableStateFlow("Kotlin State Flow")
+    val stateFlow: StateFlow<String> = _stateFlow.asStateFlow()
+
+    fun changeStateFlowValue(){
+        _stateFlow.value = "State Flow"
+    }
+
+    private val _sharedFlow = MutableSharedFlow<String>()
+    val sharedFlow: SharedFlow<String> = _sharedFlow.asSharedFlow()
+
+    fun changeSharedFlowValue(){
+        viewModelScope.launch {
+            _sharedFlow.emit("Shared Flow")
+        }
+    }
+
 }
